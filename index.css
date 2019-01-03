@@ -22,12 +22,17 @@ ul {
     list-style: none;
 }
 
+section {
+    height: 60%;
+    width: 100%;
+}
+
 .nav-items {
     display: flex;
     height: 46px;
     align-items: center;
     padding: 0 10px;
-    border: 1px solid rgba(238,238,238 ,1);
+    /*border: 1px solid rgba(238,238,238 ,1);*/
     border-radius: 5px;
     color: rgba(117,117,117 ,1);
     box-shadow: 5px 10px 20px -20px rgba(85,172,238 ,1);
@@ -61,5 +66,8 @@ ul {
     border: 0;
     background: rgba(85,172,238 ,1);
     color: #fff;
-    border-radius: 100px;
+}
+
+#view {
+    width: 100%;
 }

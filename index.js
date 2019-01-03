@@ -1,26 +1,54 @@
 'use strict';
 
-const geoOptions = {
-    enableHighAccuracy: true,
-    timeout: 5000,
-    maximumAge: 0
-};
+let currentLoc = "";
+const mapsKey = "AIzaSyAk6cIJCwxIpMhWqBsPB3SUoIYO7dfyueg";
 
-function getGeoSuccess(pos) {
-    console.log(pos);
-    const crd = pos.coords;
-    console.log('Current position: ', crd);
-}
+let map, infoWindow;
 
-function error(err) {
-    console.warn(`ERROR(${err.code}): ${err.message}`);
-}
+function initMap() {
+    console.log('init map');
+    map = new google.maps.Map(document.getElementById('view'), {
+      center: {lat: -34.397, lng: 150.644},
+      zoom: 10
+    });
+    infoWindow = new google.maps.InfoWindow;
+
+    // Try HTML5 geolocation.
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function(position) {
+        let pos = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude
+        };
+
+        console.log(pos);
+
+        infoWindow.setPosition(pos);
+        infoWindow.setContent('Location found.');
+        infoWindow.open(map);
+        map.setCenter(pos);
+      }, function() {
+        handleLocationError(true, infoWindow, map.getCenter());
+      });
+    } else {
+      // Browser doesn't support Geolocation
+      handleLocationError(false, infoWindow, map.getCenter());
+    }
+  }
+
+  function handleLocationError(browserHasGeolocation, infoWindow, pos) {
+    infoWindow.setPosition(pos);
+    infoWindow.setContent(browserHasGeolocation ?
+                          'Error: The Geolocation service failed.' :
+                          'Error: Your browser doesn\'t support geolocation.');
+    infoWindow.open(map);
+  }
 
 function watchIcon() {
     console.log('watchIcon run');
     $('#location_arrow').click(event => {
         event.preventDefault();
-        navigator.geolocation.getCurrentPosition(getGeoSuccess, error, geoOptions);
+        initMap();
         console.log('getGeoPos Called');
     });
 }
@@ -30,6 +58,8 @@ function watchForm() {
     $('#submit_button').click(event => {
       event.preventDefault();
       const searchTerm = $('#js-search-form').val();
+      currentLoc = searchTerm;
+      console.log(currentLoc);
       console.log('User entered zip', searchTerm);
     });
   }
