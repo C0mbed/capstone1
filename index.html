@@ -14,10 +14,10 @@
         <nav>
             <ul class="nav-items" role="navigation">
                 <li><i class="fa fa-snowflake"></i> powpow</li>
+                <li class="resort_name"><form><input placeholder="favorite ski resort" id="js-search-form"/></form></li>
+                <li class="find_pow"><button id="submit_button">FIND ME</button></li>
                 <li class="mountain-icon"><i class="fa fa-mountain" id="mountain_icon"></i></li>
-                <li><i class="fa fa-location-arrow" id="location_arrow"></i></li>
-                <!--<li><form><input placeholder="enter zip code" id="js-search-form"/></form></li>
-                <li><button id="submit_button">Search</button></li>-->
+                <!--<li><i class="fa fa-location-arrow" id="location_arrow"></i></li>-->
             </ul>
         </nav>
         <section id="view">
@@ -30,9 +30,7 @@
         </footer>
     </main>
     <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
-    <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAk6cIJCwxIpMhWqBsPB3SUoIYO7dfyueg&callback=initMap">
-    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAk6cIJCwxIpMhWqBsPB3SUoIYO7dfyueg&libraries=places&callback=initMap" async defer></script>
     <script src="index.js"></script>
 </body>
 </html>

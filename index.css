@@ -34,6 +34,10 @@ li {
     font-size: 1.3em;
 }
 
+form {
+    height: 21px;
+}
+
 section {
     height: 60%;
     width: 100%;
@@ -50,6 +54,9 @@ section {
     box-shadow: 5px 10px 20px -20px rgba(85,172,238 ,1);*/
     margin-bottom: 0;
     margin-top: 0;
+    font-size: 0.8em;
+    background: #fff;
+    color: rgba(85,172,238 ,1);
 }
 
 .nav-items li {
@@ -60,11 +67,13 @@ section {
     color: rgba(85,172,238 ,1);
 }
 
+.resort_name {
+    margin-left: auto;
+    margin-right: auto;
+}
 .mountain-icon {
     color: rgba(85,172,238 ,1);
     font-size: 1.3em;
-    margin-left: auto;
-    margin-right: auto;
 }
 
 .nav-items li:not(:last-child):not(.mountain_icon) {
@@ -77,9 +86,9 @@ section {
 
 .nav-items li > button {
     font-size: 0.8em;
-    border: 0;
-    background: rgba(85,172,238 ,1);
-    color: #fff;
+    border: 1px solid rgba(85,172,238 ,1); 
+    background: #fff;
+    color: rgba(85,172,238 ,1);
 }
 
 #view {
