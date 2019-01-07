@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/C0mbed/capstone1/issues"
   },
-  "homepage": "https://github.com/C0mbed/capstone1#readme"
+  "homepage": "https://github.com/C0mbed/capstone1#readme",
+  "dependencies": {
+    "axios": "^0.18.0"
+  }
 }

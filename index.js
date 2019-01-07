@@ -12,10 +12,41 @@ var map;
 var infowindow;
 var service;
 
+function darkSkyCall(currentLoc) {
+  console.log('dark sky called');
+
+  const darkSkyOptions = {
+    key: 'e00247283cc347a8def749e239756f8d',
+    latitude: currentLoc.lat,
+    longitude: currentLoc.long
+  };
+
+  const options = {
+    method: 'GET',
+    mode: 'no-cors'
+  }
+
+  let darkSkyUrl = `https://api.darksky.net/forecast/${darkSkyOptions.key}/${darkSkyOptions.latitude},${darkSkyOptions.longitude}`;
+  console.log('the url is ', darkSkyUrl);
+
+  fetch(darkSkyUrl, options)
+    .then(response => {
+      console.log('fetch run');
+      if (response.ok) {
+        console.log(response.json());
+        return response.json();
+      }
+      throw new Error(response.statusText);
+    })
+    .catch(err => {
+      $('#results-view').append(`Something went wrong: ${err.message}`);
+    });
+}
+
 function codeAddress(q) {
     initMap(q)
     var address = q;
-    console.log(address);
+    //console.log(address);
     geocoder.geocode( { 'placeId': address}, function(results, status) {
       if (status == 'OK') {
         map.setCenter(results[0].geometry.location);
@@ -33,15 +64,12 @@ function initialize() {
   var address = (document.getElementById('js-search-form'));
   var autocomplete = new google.maps.places.Autocomplete(address);
   autocomplete.setTypes(['geocode']);
-  console.log('The address is ', autocomplete);
 
   $('input').click
 
   google.maps.event.addListener(autocomplete, 'place_changed', function() {
       var place = autocomplete.getPlace();
-      console.log('keypress engaged');
       if (!place.geometry) {
-        console.log('keypress engaged');
           return;
       }
   var address = '';
@@ -51,7 +79,6 @@ function initialize() {
           (place.address_components[1] && place.address_components[1].short_name || ''),
           (place.address_components[2] && place.address_components[2].short_name || '')
           ].join(' ');
-  console.log(address);
   }
 });
 }
@@ -63,6 +90,7 @@ function codeAddress() {
     if (status == google.maps.GeocoderStatus.OK) {
         currentLoc.lat = results[0].geometry.location.lat();
         currentLoc.long = results[0].geometry.location.lng();
+        darkSkyCall(currentLoc);
         initMap();
     }
     else {
@@ -94,7 +122,6 @@ function initMap(q) {
   function callback(results, status) {
     const filteredResults = filterResults(results);
     $('#results_view_list').empty();
-    console.log(filteredResults);
     if (status === google.maps.places.PlacesServiceStatus.OK) {
       for (var i = 0; i < filteredResults.length; i++) {
         createMarker(filteredResults[i]);
@@ -133,14 +160,13 @@ function generateId(result) {
   let removeSpaces = result.name.split(" ");
   let idName = removeSpaces[0] + "_" + removeSpaces[1];
 
-  console.log(idName);
   return idName;
 }
 
 function displaySearchResult(result) {
     let idName = generateId(result);
     let newResult = `<li id="${idName}" class="result_item">${result.name}</li>`
-    
+
     $('#results_view_list').append(newResult);
 
 }
@@ -152,7 +178,7 @@ function findLoc() {
             lat: position.coords.latitude,
             lng: position.coords.longitude
           };
-          console.log('my current location ', pos);
+
           currentLoc.lat = pos.lat;
           currentLoc.long = pos.long;
         }, function() {
@@ -169,7 +195,6 @@ function watchIcon() {
     $('#location_arrow').click(event => {
         event.preventDefault();
         initMap();
-        console.log('getGeoPos Called');
     });
 }
 
@@ -178,7 +203,6 @@ function watchButton() {
     $('#submit_button').click(event => {
       event.preventDefault();
       const searchTerm = $('#js-search-form').val();
-      console.log(searchTerm);
       //initMap(searchTerm);
       codeAddress();
     });
@@ -186,10 +210,9 @@ function watchButton() {
 
 function handleKeypress() {
   $('#js-search-form').keypress(event => {
-    console.log('keypress engaged');
     if (event.keyCode == 13) {
       event.preventDefault();
-      console.log('keypress engaged');
+
       $('#submit_button').click();
     }
   });
