@@ -13,16 +13,26 @@ body {
 main {
     width: 100%;
     height: 100vh;
+    justify-content: center;
 }
 nav {
-    width: 100%;
+    width: 400px;
+    height: 40px;
+    display: flex;
+    position: absolute;
+    top: 10px;
+    right: 0;
+    left: 0;
+    z-index: 1000;
+    justify-content: center;
     background: #fff;
-    padding: 20px;;
-    border-radius: 5px;
-    /*box-shadow: 5px 55px 50px -20px #b6b6b6;*/
+    padding: 20px;
+    border-radius: 2px;
     margin-bottom: 0;
+    margin-left: auto;
+    margin-right: auto;
     color: rgba(117,117,117 ,1);
-    box-shadow: 5px 10px 20px -20px rgba(85,172,238 ,1);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2), 0 -1px 0px rgba(0,0,0,0.02);
 }
 
 ul {
@@ -48,18 +58,16 @@ input {
     width: 300px;
     height: 21px;
     padding: 5px;
-    border: 1px solid rgba(85,172,238,1);
+    border-color: transparent;
+    border: none;
+    font-size: 1.3em;
 }
 
 .nav-items {
     display: flex;
-    height: 46px;
+    justify-content: center;
     align-items: center;
     padding: 0 10px;
-    /*border: 1px solid rgba(238,238,238 ,1);
-    border-radius: 5px;
-    color: rgba(117,117,117 ,1);
-    box-shadow: 5px 10px 20px -20px rgba(85,172,238 ,1);*/
     margin-bottom: 0;
     margin-top: 0;
     font-size: 0.8em;
@@ -81,7 +89,7 @@ input {
 }
 .mountain-icon {
     color: rgba(85,172,238 ,1);
-    font-size: 1.3em;
+    font-size: 1.8em;
 }
 
 .nav-items li:not(:last-child):not(.mountain_icon) {
@@ -93,12 +101,30 @@ input {
 }
 
 .nav-items li > button {
-    font-size: 0.8em;
-    border: 1px solid rgba(85,172,238 ,1); 
+    font-size: 1.3em;
     background: #fff;
+    border: none;
     color: rgba(85,172,238 ,1);
 }
 
 #view {
     width: 100%;
+    height: 100vh;
+    margin-bottom: 0px;
+    z-index: 500;
+}
+
+#results_view {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 10px;
+    width: 250px;
+    background-color: #fff;
+    z-index: 900;
+    padding: 10px;
+    margin-top: auto;
+    margin-bottom: auto;
+    font-size: 0.8em;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2), 0 -1px 0px rgba(0,0,0,0.02);
 }

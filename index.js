@@ -129,9 +129,20 @@ function filterResults(results) {
   })
 }
 
+function generateId(result) {
+  let removeSpaces = result.name.split(" ");
+  let idName = removeSpaces[0] + "_" + removeSpaces[1];
+
+  console.log(idName);
+  return idName;
+}
+
 function displaySearchResult(result) {
-    let newResult = `<li>${result.name}</li>`;
-    $('#results_view_list').append(newResult)
+    let idName = generateId(result);
+    let newResult = `<li id="${idName}" class="result_item">${result.name}</li>`
+    
+    $('#results_view_list').append(newResult);
+
 }
 
 function findLoc() {
