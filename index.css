@@ -36,11 +36,16 @@ li {
 
 form {
     height: 21px;
+    width: 50%;
 }
 
 section {
     height: 60%;
     width: 100%;
+}
+
+input {
+    width: 300px;
 }
 
 .nav-items {
@@ -67,7 +72,7 @@ section {
     color: rgba(85,172,238 ,1);
 }
 
-.resort_name {
+.find_address {
     margin-left: auto;
     margin-right: auto;
 }
@@ -80,7 +85,7 @@ section {
     margin-right: 10px;
 }
 
-.nav-itemsli  i:not(.fa-mountain_icon):not(.fa-search) {
+.nav-items li  i:not(.fa-mountain_icon):not(.fa-search) {
     margin-right: 3px;
 }
 

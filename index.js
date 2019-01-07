@@ -29,10 +29,52 @@ function codeAddress(q) {
     });
 }
 
+function initialize() {
+  var address = (document.getElementById('js-search-form'));
+  var autocomplete = new google.maps.places.Autocomplete(address);
+  autocomplete.setTypes(['geocode']);
+  /*google.maps.event.addListener(autocomplete, 'place_changed', function() {
+      var place = autocomplete.getPlace();
+      console.log('keypress engaged');
+      if (!place.geometry) {
+        console.log('keypress engaged');
+          return;
+      }
+  var address = '';
+  if (place.address_components) {
+      address = [
+          (place.address_components[0] && place.address_components[0].short_name || ''),
+          (place.address_components[1] && place.address_components[1].short_name || ''),
+          (place.address_components[2] && place.address_components[2].short_name || '')
+          ].join(' ');
+  console.log(address);
+  }
+});*/
+}
 
+function codeAddress() {
+  console.log('code address run');
+  geocoder = new google.maps.Geocoder();
+  var address = document.getElementById("js-search-form").value;
+  geocoder.geocode( { 'address': address}, function(results, status) {
+    if (status == google.maps.GeocoderStatus.OK) {
+
+        currentLoc.lat = results[0].geometry.location.lat();
+        currentLoc.long = results[0].geometry.location.lng();
+        console.log(currentLoc);
+        initMap();
+    }
+
+    else {
+      alert("Geocode was not successful for the following reason: " + status);
+    }
+  });
+}
 
 function initMap(q) {
     var pos = new google.maps.LatLng(currentLoc.lat, currentLoc.long);
+
+    initialize();
 
     map = new google.maps.Map(document.getElementById('view'), {
       center: pos,
@@ -89,50 +131,6 @@ function findLoc() {
         handleLocationError(false, infoWindow, map.getCenter());
       }
 }
-//https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=-33.8670522,151.1957362&radius=1500&type=restaurant&keyword=cruise&key=YOUR_API_KEY
-
-/*function initMap() {
-    console.log('init map');
-    map = new google.maps.Map(document.getElementById('view'), {
-      center: {lat: 50.0591608, lng: -122.9919636},
-      zoom: 10
-    });
-    infoWindow = new google.maps.InfoWindow;
-
-    // Try HTML5 geolocation.
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(function(position) {
-        let pos = {
-          lat: position.coords.latitude,
-          lng: position.coords.longitude
-        };
-
-        currentLoc = pos;
-
-        console.log(pos);
-
-        infoWindow.setPosition(pos);
-        infoWindow.setContent('Me');
-        infoWindow.open(map);
-        map.setCenter(pos);
-      }, function() {
-        handleLocationError(true, infoWindow, map.getCenter());
-      });
-    } else {
-      // Browser doesn't support Geolocation
-      handleLocationError(false, infoWindow, map.getCenter());
-    }
-    reload();
-  }
-*/
-
-  function handleLocationError(browserHasGeolocation, infoWindow, pos) {
-    infoWindow.setPosition(pos);
-    infoWindow.setContent(browserHasGeolocation ?
-                          'This service requires your location.' :
-                          'Error: Your browser doesn\'t support geolocation.');
-    infoWindow.open(map);
-  }
 
 function watchIcon() {
     //console.log('watchIcon run');
@@ -143,23 +141,35 @@ function watchIcon() {
     });
 }
 
-function watchButton(currentLoc) {
+function watchButton() {
     //console.log('WatchButton run');
     $('#submit_button').click(event => {
       event.preventDefault();
       const searchTerm = $('#js-search-form').val();
       console.log(searchTerm);
       //initMap(searchTerm);
-      codeAddress(searchTerm);
+      codeAddress();
     });
   }
 
+function handleKeypress() {
+  $('.find_address').keypress(event => {
+    console.log('keypress engaged');
+    if (event.keyCode == 13) {
+      console.log('keypress engaged');
+      $('#submit_button').click();
+    }
+  });
+}
+
 function reload() {
-    watchButton(currentLoc);
+    watchButton();
     watchIcon();
+    handleKeypress();
 }
 
 $(document).ready(function(){
-    watchButton(currentLoc);
+    watchButton();
     watchIcon();
+    handleKeypress();
 });
