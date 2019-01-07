@@ -33,7 +33,11 @@ function initialize() {
   var address = (document.getElementById('js-search-form'));
   var autocomplete = new google.maps.places.Autocomplete(address);
   autocomplete.setTypes(['geocode']);
-  /*google.maps.event.addListener(autocomplete, 'place_changed', function() {
+  console.log('The address is ', autocomplete);
+
+  $('input').click
+
+  google.maps.event.addListener(autocomplete, 'place_changed', function() {
       var place = autocomplete.getPlace();
       console.log('keypress engaged');
       if (!place.geometry) {
@@ -49,22 +53,18 @@ function initialize() {
           ].join(' ');
   console.log(address);
   }
-});*/
+});
 }
 
 function codeAddress() {
-  console.log('code address run');
   geocoder = new google.maps.Geocoder();
   var address = document.getElementById("js-search-form").value;
   geocoder.geocode( { 'address': address}, function(results, status) {
     if (status == google.maps.GeocoderStatus.OK) {
-
         currentLoc.lat = results[0].geometry.location.lat();
         currentLoc.long = results[0].geometry.location.lng();
-        console.log(currentLoc);
         initMap();
     }
-
     else {
       alert("Geocode was not successful for the following reason: " + status);
     }
@@ -92,10 +92,13 @@ function initMap(q) {
   }
 
   function callback(results, status) {
-      console.log(results);
+    const filteredResults = filterResults(results);
+    $('#results_view_list').empty();
+    console.log(filteredResults);
     if (status === google.maps.places.PlacesServiceStatus.OK) {
-      for (var i = 0; i < results.length; i++) {
-        createMarker(results[i]);
+      for (var i = 0; i < filteredResults.length; i++) {
+        createMarker(filteredResults[i]);
+        displaySearchResult(filteredResults[i]);
       }
     }
   }
@@ -112,6 +115,24 @@ function initMap(q) {
       infowindow.open(map, this);
     });
   }
+
+function filterResults(results) {
+  const disallowedArray = ['restaurant', 'store', 'clothing_store', 'travel_agency', 'real_estate_agency'];
+   return results.filter(result => {
+    let end = true;
+    disallowedArray.forEach(type => {
+      if(result.types.includes(type)) {
+        end = false;
+      }
+    })
+    return end;
+  })
+}
+
+function displaySearchResult(result) {
+    let newResult = `<li>${result.name}</li>`;
+    $('#results_view_list').append(newResult)
+}
 
 function findLoc() {
     if (navigator.geolocation) {
@@ -153,9 +174,10 @@ function watchButton() {
   }
 
 function handleKeypress() {
-  $('.find_address').keypress(event => {
+  $('#js-search-form').keypress(event => {
     console.log('keypress engaged');
     if (event.keyCode == 13) {
+      event.preventDefault();
       console.log('keypress engaged');
       $('#submit_button').click();
     }
