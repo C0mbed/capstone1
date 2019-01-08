@@ -22,19 +22,24 @@ function darkSkyCall(currentLoc) {
   };
 
   const options = {
-    method: 'GET',
-    mode: 'no-cors'
-  }
+    mode: "cors",
+    headers: {
+      "Content-Type": "application/json"
+    },
 
+  }
+  let proxy = 'https://cors-anywhere.herokuapp.com/';
   let darkSkyUrl = `https://api.darksky.net/forecast/${darkSkyOptions.key}/${darkSkyOptions.latitude},${darkSkyOptions.longitude}`;
+  let url = proxy + darkSkyUrl;
   console.log('the url is ', darkSkyUrl);
 
-  fetch(darkSkyUrl, options)
+  fetch(url)
     .then(response => {
       console.log('fetch run');
       if (response.ok) {
-        console.log(response.json());
-        return response.json();
+        const response = response.json();
+        console.log(response);
+        return response;
       }
       throw new Error(response.statusText);
     })
