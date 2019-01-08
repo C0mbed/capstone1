@@ -5,6 +5,19 @@ let currentLoc = {
     long: -106.3549717
 };
 
+let currentWeather;
+
+function findCurrentWeather(weather, location) {
+  currentWeather = openWeatherCall(currentLoc);
+  console.log(currentWeather);
+}
+
+function yesterdayTimeStamp() {
+  let unixStamp = Math.round(((new Date()).getTime() / 1000) - 86400);
+  return unixStamp;
+}
+
+
 const mapsKey = "AIzaSyAk6cIJCwxIpMhWqBsPB3SUoIYO7dfyueg";
 
 var geocoder;
@@ -12,39 +25,30 @@ var map;
 var infowindow;
 var service;
 
-function darkSkyCall(currentLoc) {
-  console.log('dark sky called');
+function openWeatherCall(currentLoc) {
+  console.log('weather called, forecast is for pow!');
 
-  const darkSkyOptions = {
-    key: 'e00247283cc347a8def749e239756f8d',
+  const openOptions = {
+    key: '0901146c0bfaac7c82fb3660c772b2ed',
     latitude: currentLoc.lat,
     longitude: currentLoc.long
   };
 
-  const options = {
-    mode: "cors",
-    headers: {
-      "Content-Type": "application/json"
-    },
-
-  }
-  let proxy = 'https://cors-anywhere.herokuapp.com/';
-  let darkSkyUrl = `https://api.darksky.net/forecast/${darkSkyOptions.key}/${darkSkyOptions.latitude},${darkSkyOptions.longitude}`;
-  let url = proxy + darkSkyUrl;
-  console.log('the url is ', darkSkyUrl);
+  let url = `http://api.openweathermap.org/data/2.5/forecast?lat=${openOptions.latitude}&lon=${openOptions.longitude}&APPID=${openOptions.key}`;
+  console.log('the url is ', url);
 
   fetch(url)
-    .then(response => {
+    .then(res => {
       console.log('fetch run');
-      if (response.ok) {
-        const response = response.json();
-        console.log(response);
-        return response;
+      if (res.ok) {
+        return response.json();
       }
+      console.log('error');
       throw new Error(response.statusText);
     })
     .catch(err => {
-      $('#results-view').append(`Something went wrong: ${err.message}`);
+      $('#results_view').empty();
+      $('#results_view').text(`Something went wrong: ${err.message}`);
     });
 }
 
@@ -95,7 +99,7 @@ function codeAddress() {
     if (status == google.maps.GeocoderStatus.OK) {
         currentLoc.lat = results[0].geometry.location.lat();
         currentLoc.long = results[0].geometry.location.lng();
-        darkSkyCall(currentLoc);
+        findCurrentWeather();
         initMap();
     }
     else {
