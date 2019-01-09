@@ -17,6 +17,10 @@ function yesterdayTimeStamp() {
   return unixStamp;
 }
 
+function displayResults(res) {
+  console.log(res);
+}
+
 
 const mapsKey = "AIzaSyAk6cIJCwxIpMhWqBsPB3SUoIYO7dfyueg";
 
@@ -41,7 +45,7 @@ function openWeatherCall(currentLoc) {
     .then(res => {
       console.log('fetch run');
       if (res.ok) {
-        return response.json();
+        return res.json();
       }
       console.log('error');
       throw new Error(response.statusText);
@@ -131,10 +135,12 @@ function initMap(q) {
   function callback(results, status) {
     const filteredResults = filterResults(results);
     $('#results_view_list').empty();
+    let displayWeather = openWeatherCall(currentLoc);
+    console.log(displayWeather);
     if (status === google.maps.places.PlacesServiceStatus.OK) {
       for (var i = 0; i < filteredResults.length; i++) {
         createMarker(filteredResults[i]);
-        displaySearchResult(filteredResults[i]);
+        displaySearchResult(filteredResults[i], displayWeather);
       }
     }
   }
@@ -174,9 +180,10 @@ function generateId(result) {
 
 function displaySearchResult(result) {
     let idName = generateId(result);
-    let newResult = `<li id="${idName}" class="result_item">${result.name}</li>`
 
-    $('#results_view_list').append(newResult);
+    const resultDiv = `<div class="result_div" id="${idName}">${result.name}</div>`
+
+    $('#results_view').append(resultDiv);
 
 }
 
