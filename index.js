@@ -9,7 +9,7 @@ let currentWeather;
 
 function findCurrentWeather(weather, location) {
   currentWeather = openWeatherCall(currentLoc);
-  console.log(currentWeather);
+  displayWeather(currentWeather);
 }
 
 function yesterdayTimeStamp() {
@@ -28,6 +28,13 @@ var geocoder;
 var map;
 var infowindow;
 var service;
+var weather;
+
+function setWeather(res) {
+  weather = res;
+  console.log(weather);
+  displayWeather(weather);
+}
 
 function openWeatherCall(currentLoc) {
   console.log('weather called, forecast is for pow!');
@@ -50,6 +57,7 @@ function openWeatherCall(currentLoc) {
       console.log('error');
       throw new Error(response.statusText);
     })
+    .then(resJson => setWeather(resJson))
     .catch(err => {
       $('#results_view').empty();
       $('#results_view').text(`Something went wrong: ${err.message}`);
@@ -183,7 +191,31 @@ function displaySearchResult(result) {
 
     const resultDiv = `<div class="result_div" id="${idName}">${result.name}</div>`
 
-    $('#results_view').append(resultDiv);
+    $('#results_view_list').append(resultDiv);
+
+}
+
+function determineIcon(conditions) {
+  const conditionArray = {
+    clouds: 'fa-cloud',
+    clear: 'fa-sun',
+    rain: 'fa-cloud-rain',
+    snow: 'fa-cloud-snow',
+    fog: 'fa-fog'
+  };
+
+}
+
+function displayWeather(weather) {
+  console.log('the weather in displayWeather is ', weather);
+  const conditions = weather.list[0].weather[0].main;
+  const forecastDescription = weather.list[0].weather[0].description;
+
+  const icon = determineIcon(conditions);
+
+  $('#icon').addClass(icon);
+  $('#weather_results_list').append(conditions);
+  $('#weather_results_list').append(forecastDescription);
 
 }
 
@@ -220,6 +252,9 @@ function watchButton() {
       event.preventDefault();
       const searchTerm = $('#js-search-form').val();
       //initMap(searchTerm);
+      let title = `<h2>Showing Ski Areas Within 50km of ${searchTerm}</h2>`;
+      $('#results_view').empty();
+      $('#results_view').append(title);
       codeAddress();
     });
   }

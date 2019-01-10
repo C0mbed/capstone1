@@ -92,6 +92,9 @@ button:focus {
     width: 20%;
 }
 
+.hidden {
+    display: none;
+}
 .mountain-icon {
     color: rgba(85,172,238,1);
     font-size: 1.8em;
@@ -122,8 +125,26 @@ button:focus {
 
 #results_view {
     width: 100%;
+    display: flex;
+    flex-direction: row;
     background-color: #fff;
     padding: 10px;
     color: rgba(255,255,255,.78);
     background-color: rgba(45,46,57,1);
+}
+
+#resort_view {
+    width: 50%;
+    height: 100%;
+    border: 1px solid rgba(190,36,145 ,1);
+}
+
+#weather_result_view {
+    width: 50%;
+    height: 100%;
+    border: 1px solid rgba(190,36,145 ,1);
+}
+
+#results_view h2 {
+    border-bottom: 1px solid rgba(190,36,145 ,1);
 }
