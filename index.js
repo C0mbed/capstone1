@@ -7,10 +7,13 @@ let currentLoc = {
 
 let currentWeather;
 
-function findCurrentWeather(weather, location) {
-  currentWeather = openWeatherCall(currentLoc);
-  displayWeather(currentWeather);
+function findCurrentWeather(currentLoc) {
+  openWeatherCall(currentLoc).then(currentWeather =>{
+    console.log('currentWeather is findCurrentWeather ', currentWeather);
+    displayWeather(currentWeather);
+  });
 }
+
 
 function yesterdayTimeStamp() {
   let unixStamp = Math.round(((new Date()).getTime() / 1000) - 86400);
@@ -32,12 +35,10 @@ var weather;
 
 function setWeather(res) {
   weather = res;
-  console.log(weather);
   displayWeather(weather);
 }
 
 function openWeatherCall(currentLoc) {
-  console.log('weather called, forecast is for pow!');
 
   const openOptions = {
     key: '0901146c0bfaac7c82fb3660c772b2ed',
@@ -48,7 +49,7 @@ function openWeatherCall(currentLoc) {
   let url = `http://api.openweathermap.org/data/2.5/forecast?lat=${openOptions.latitude}&lon=${openOptions.longitude}&APPID=${openOptions.key}`;
   console.log('the url is ', url);
 
-  fetch(url)
+  return fetch(url)
     .then(res => {
       console.log('fetch run');
       if (res.ok) {
@@ -64,10 +65,10 @@ function openWeatherCall(currentLoc) {
     });
 }
 
-function codeAddress(q) {
+/*function codeAddress(q) {
     initMap(q)
     var address = q;
-    //console.log(address);
+    console.log('This console log is in CodeAddres(q)', address);
     geocoder.geocode( { 'placeId': address}, function(results, status) {
       if (status == 'OK') {
         map.setCenter(results[0].geometry.location);
@@ -80,6 +81,7 @@ function codeAddress(q) {
       }
     });
 }
+*/
 
 function initialize() {
   var address = (document.getElementById('js-search-form'));
@@ -105,13 +107,15 @@ function initialize() {
 }
 
 function codeAddress() {
+  console.log('codeAddress the second is being called');
   geocoder = new google.maps.Geocoder();
   var address = document.getElementById("js-search-form").value;
   geocoder.geocode( { 'address': address}, function(results, status) {
     if (status == google.maps.GeocoderStatus.OK) {
         currentLoc.lat = results[0].geometry.location.lat();
         currentLoc.long = results[0].geometry.location.lng();
-        findCurrentWeather();
+        console.log('currentloc in code address is', currentLoc);
+        findCurrentWeather(currentLoc);
         initMap();
     }
     else {
@@ -143,12 +147,10 @@ function initMap(q) {
   function callback(results, status) {
     const filteredResults = filterResults(results);
     $('#results_view_list').empty();
-    let displayWeather = openWeatherCall(currentLoc);
-    console.log(displayWeather);
     if (status === google.maps.places.PlacesServiceStatus.OK) {
       for (var i = 0; i < filteredResults.length; i++) {
         createMarker(filteredResults[i]);
-        displaySearchResult(filteredResults[i], displayWeather);
+        displaySearchResult(filteredResults[i]);
       }
     }
   }
@@ -238,14 +240,6 @@ function findLoc() {
       }
 }
 
-function watchIcon() {
-    //console.log('watchIcon run');
-    $('#location_arrow').click(event => {
-        event.preventDefault();
-        initMap();
-    });
-}
-
 function watchButton() {
     //console.log('WatchButton run');
     $('#submit_button').click(event => {
@@ -271,12 +265,12 @@ function handleKeypress() {
 
 function reload() {
     watchButton();
-    watchIcon();
+    //watchIcon();
     handleKeypress();
 }
 
 $(document).ready(function(){
     watchButton();
-    watchIcon();
+    //watchIcon();
     handleKeypress();
 });

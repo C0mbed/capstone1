@@ -23,7 +23,6 @@ nav {
     z-index: 1000;
     background: #fff;
     padding: 20px;
-    border-radius: 2px;
     margin-bottom: 0;
     margin-left: auto;
     margin-right: auto;
@@ -114,6 +113,11 @@ button:focus {
     color: rgba(255,255,255,.95);
     background-color: rgba(45,46,57,1);
     border: 1px solid rgba(190,36,145 ,1);
+}
+
+.result_div {
+    padding: 10px;
+    color: rgba(255,255,255,.78);
 }
 
 #view {
