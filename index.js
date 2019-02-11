@@ -1,41 +1,58 @@
 'use strict';
 
 let currentLoc = {
-    lat: 39.6061444,
-    long: -106.3549717
+  lat: 39.6061444,
+  long: -106.3549717
 };
 
-let currentWeather;
-
-function findCurrentWeather(currentLoc) {
-  openWeatherCall(currentLoc).then(currentWeather =>{
-    console.log('currentWeather is findCurrentWeather ', currentWeather);
-    displayWeather(currentWeather);
-  });
-}
-
-
-function yesterdayTimeStamp() {
-  let unixStamp = Math.round(((new Date()).getTime() / 1000) - 86400);
-  return unixStamp;
-}
-
-function displayResults(res) {
-  console.log(res);
-}
-
-
-const mapsKey = "AIzaSyAk6cIJCwxIpMhWqBsPB3SUoIYO7dfyueg";
-
+var currentWeather;
 var geocoder;
 var map;
 var infowindow;
-var service;
 var weather;
 
+function findLoc() {
+  if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function(position) {
+        let pos = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude
+        };
+
+        currentLoc.lat = pos.lat;
+        currentLoc.long = pos.long;
+      }, function() {
+        handleLocationError(true, infoWindow, map.getCenter());
+      });
+    } else {
+      // Browser doesn't support Geolocation
+      handleLocationError(false, infoWindow, map.getCenter());
+    }
+}
+
+function findCurrentWeather(currentLoc) {
+  openWeatherCall(currentLoc).then(currentWeather =>{
+      if (currentWeather) {
+          console.log('currentWeather in findCurrentWeather ', currentWeather);
+          displayWeather(currentWeather);
+      }
+  });
+}
+
+function formatTemp(temp) {
+  const tempF = `${Math.round(temp-273.15)}C`;
+  return tempF;
+}
+
 function setWeather(res) {
-  weather = res;
-  displayWeather(weather);
+    if (res) {
+        weather = res;
+        displayWeather(weather);
+    } else {
+        $('#results_view').empty();
+        $('#results_view').text(`Something went wrong: ${err.message}`);
+    }
+
 }
 
 function openWeatherCall(currentLoc) {
@@ -49,39 +66,23 @@ function openWeatherCall(currentLoc) {
   let url = `http://api.openweathermap.org/data/2.5/forecast?lat=${openOptions.latitude}&lon=${openOptions.longitude}&APPID=${openOptions.key}`;
   console.log('the url is ', url);
 
-  return fetch(url)
-    .then(res => {
-      console.log('fetch run');
-      if (res.ok) {
-        return res.json();
-      }
-      console.log('error');
-      throw new Error(response.statusText);
-    })
-    .then(resJson => setWeather(resJson))
-    .catch(err => {
-      $('#results_view').empty();
-      $('#results_view').text(`Something went wrong: ${err.message}`);
-    });
+  if (currentLoc) {
+      return fetch(url)
+          .then(res => {
+              console.log('fetch run');
+              if (res.ok) {
+                  return res.json();
+              }
+              console.log('error');
+              throw new Error(response.statusText);
+          })
+          .then(resJson => setWeather(resJson))
+          .catch(err => {
+              $('#results_view').empty();
+              $('#results_view').text(`Something went wrong: ${err.message}`);
+          });
+  }
 }
-
-/*function codeAddress(q) {
-    initMap(q)
-    var address = q;
-    console.log('This console log is in CodeAddres(q)', address);
-    geocoder.geocode( { 'placeId': address}, function(results, status) {
-      if (status == 'OK') {
-        map.setCenter(results[0].geometry.location);
-        var marker = new google.maps.Marker({
-            map: map,
-            position: results[0].geometry.location
-        });
-      } else {
-        alert('Geocode was not successful for the following reason: ' + status);
-      }
-    });
-}
-*/
 
 function initialize() {
   var address = (document.getElementById('js-search-form'));
@@ -114,7 +115,6 @@ function codeAddress() {
     if (status == google.maps.GeocoderStatus.OK) {
         currentLoc.lat = results[0].geometry.location.lat();
         currentLoc.long = results[0].geometry.location.lng();
-        console.log('currentloc in code address is', currentLoc);
         findCurrentWeather(currentLoc);
         initMap();
     }
@@ -152,6 +152,9 @@ function initMap(q) {
         createMarker(filteredResults[i]);
         displaySearchResult(filteredResults[i]);
       }
+    } else {
+      const noResorts = `I'm sorry, there are no Ski Resorts within 50km.`
+      $('#results_view_list').append(noResorts);
     }
   }
 
@@ -169,7 +172,7 @@ function initMap(q) {
   }
 
 function filterResults(results) {
-  const disallowedArray = ['restaurant', 'store', 'clothing_store', 'travel_agency', 'real_estate_agency'];
+  const disallowedArray = ['restaurant', 'store', 'guest', 'clothing_store', 'travel_agency', 'real_estate_agency'];
    return results.filter(result => {
     let end = true;
     disallowedArray.forEach(type => {
@@ -181,74 +184,54 @@ function filterResults(results) {
   })
 }
 
-function generateId(result) {
-  let removeSpaces = result.name.split(" ");
-  let idName = removeSpaces[0] + "_" + removeSpaces[1];
-
-  return idName;
-}
-
-function displaySearchResult(result) {
-    let idName = generateId(result);
-
-    const resultDiv = `<div class="result_div" id="${idName}">${result.name}</div>`
-
-    $('#results_view_list').append(resultDiv);
-
-}
-
 function determineIcon(conditions) {
-  const conditionArray = {
+  const formattedConditions = conditions.toLowerCase();
+  const conditionObject = {
     clouds: 'fa-cloud',
     clear: 'fa-sun',
     rain: 'fa-cloud-rain',
-    snow: 'fa-cloud-snow',
+    snow: 'fa-snowflake',
     fog: 'fa-fog'
   };
 
+  if (conditionObject[formattedConditions]) {
+      return conditionObject[formattedConditions];
+  }
+  const weatherKeys = Object.keys(conditionObject);
+}
+
+function displaySearchResult(result) {
+    const resultLi = `<li class="result_li">${result.name}</li>`
+    console.log(resultLi);
+    $('#results_view_list').append(resultLi);
 }
 
 function displayWeather(weather) {
-  console.log('the weather in displayWeather is ', weather);
   const conditions = weather.list[0].weather[0].main;
   const forecastDescription = weather.list[0].weather[0].description;
 
   const icon = determineIcon(conditions);
+  const tempInKelvin =  weather.list[0].main.temp;
+  const tempInF = formatTemp(tempInKelvin);
 
   $('#icon').addClass(icon);
-  $('#weather_results_list').append(conditions);
-  $('#weather_results_list').append(forecastDescription);
+  $('#temp').text(tempInF);
+  $('#weather_desc').text(forecastDescription);
 
-}
-
-function findLoc() {
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(function(position) {
-          let pos = {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude
-          };
-
-          currentLoc.lat = pos.lat;
-          currentLoc.long = pos.long;
-        }, function() {
-          handleLocationError(true, infoWindow, map.getCenter());
-        });
-      } else {
-        // Browser doesn't support Geolocation
-        handleLocationError(false, infoWindow, map.getCenter());
-      }
 }
 
 function watchButton() {
     //console.log('WatchButton run');
     $('#submit_button').click(event => {
       event.preventDefault();
+      console.log('button submitted');
       const searchTerm = $('#js-search-form').val();
       //initMap(searchTerm);
-      let title = `<h2>Showing Ski Areas Within 50km of ${searchTerm}</h2>`;
-      $('#results_view').empty();
-      $('#results_view').append(title);
+      let title = `<h3>Showing Ski Areas Within 50km of ${searchTerm}</h3>`;
+      $('#results_title').removeClass('hidden');
+      $('#resort_view').removeClass('hidden');
+      $('#results_title').empty();
+      $('#results_title').append(title);
       codeAddress();
     });
   }
@@ -263,14 +246,27 @@ function handleKeypress() {
   });
 }
 
-function reload() {
-    watchButton();
-    //watchIcon();
-    handleKeypress();
+function closeModal() {
+  $(document).click(event => {
+    event.preventDefault();
+    $('#new_modal').addClass('hidden');
+  });
+}
+
+function initiateModal() {
+  const popUp = `<div id="modal-content">
+                    <h2 id='modal_title'>GoPow</h2>
+                    <p>Welcome! GoPow is a simple web application to help you locate all ski resorts within 50 kilometers of your current location, and provide you with current weather conditions within that 50km radius.  To start enter the closest ski resort in the field above the map.  You can use a name, an address, or a postal code to search.</p>
+                    <p id='lets_go'>Let's Go!  Click anywhere on the page to close this box!</p>
+                    </div>`
+  $('#new_modal').append(popUp);
+  closeModal();
+  $('#new_modal').removeClass('hidden');
 }
 
 $(document).ready(function(){
     watchButton();
     //watchIcon();
     handleKeypress();
+    initiateModal();
 });

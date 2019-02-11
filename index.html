@@ -7,7 +7,7 @@
     <title>PowPow.io Powder Finder</title>
     <link rel="stylesheet" href="index.css">
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
 </head>
 <body>
     <main class="container">
@@ -23,24 +23,30 @@
         <section id="view">
             <!--View gets injected here-->
         </section>
-        <section id="results_view">
-            <div id="resort_view">
-                <ul id="results_view_list">
-                    <!--ski area results injected here-->
-                </ul>
-            </div>
-            <div id="weather_result_view">
-                <ul id="weather_results_list">
-                    <li id="icon" class="fa">
-                        <!--icon class to be added by js-->
-                    </li>
-                <!--weather results injected here-->
-                </ul>
-            </div>
+        <section id="weather_result_view">
+            <ul id="weather_results_list">
+                <li id="icon_li"><i id="icon" class="weather_results fa"></i>
+                    <!--icon class to be added by js-->
+                </li>
+                <li id="temp" class="weather_results">
+
+                </li>
+                <li id="weather_desc" class="weather_results"></li>
+            </ul>
+        </section>
+        <section id="results_title" class="hidden"></section>
+        <section id="results_view" class="hidden">
+            <ul id="results_view_list">
+                <!--ski area results injected here-->
+             </ul>
         </section>
         <footer>
         </footer>
     </main>
+    <div id="new_modal" class="modal hidden">
+        <h2>GoPow</h2>
+            <!--modal injected-->
+    </div>
     <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAk6cIJCwxIpMhWqBsPB3SUoIYO7dfyueg&libraries=places&callback=initMap" async defer></script>
     <script src="index.js"></script>
