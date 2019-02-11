@@ -201,9 +201,10 @@ button:focus {
     display: flex;
     flex-direction: column;
     border: 1px solid rgba(190,36,145 ,1);
-    width: 80%;
     height: 60%;
     margin-top: 0px;
+    text-align: center;
+    justify-content: center;
 }
 
 #resort_view {

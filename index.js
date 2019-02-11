@@ -153,7 +153,7 @@ function initMap(q) {
         displaySearchResult(filteredResults[i]);
       }
     } else {
-      const noResorts = `I'm sorry, there are no Ski Resorts within 50km.`
+      const noResorts = `No Ski Resorts within 50km.`
       $('#results_view_list').append(noResorts);
     }
   }
@@ -172,8 +172,9 @@ function initMap(q) {
   }
 
 function filterResults(results) {
-  const disallowedArray = ['restaurant', 'store', 'guest', 'clothing_store', 'travel_agency', 'real_estate_agency'];
-   return results.filter(result => {
+  console.log(results);
+  const disallowedArray = ['restaurant', 'lodging', 'clothing_store', 'travel_agency', 'real_estate_agency'];
+  return results.filter(result => {
     let end = true;
     disallowedArray.forEach(type => {
       if(result.types.includes(type)) {
@@ -201,7 +202,8 @@ function determineIcon(conditions) {
 }
 
 function displaySearchResult(result) {
-    const resultLi = `<li class="result_li">${result.name}</li>`
+  console.log(result);
+  const resultLi = `<li class="result_li">${result.name}</li>`
     console.log(resultLi);
     $('#results_view_list').append(resultLi);
 }
