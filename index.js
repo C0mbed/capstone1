@@ -140,11 +140,12 @@ function initMap(q) {
       keyword: `${q} ski`,
       location: {lat: currentLoc.lat, lng: currentLoc.long},
       radius: 50000,
-      fields: ['formatted_address', 'geometry', 'name', 'opening_hours', 'photos', 'rating'
+      fields: ['formatted_address', 'geometry', 'name', 'opening_hours', 'rating'
     ]}, callback);
   }
 
   function callback(results, status) {
+    console.log(results);
     const filteredResults = filterResults(results);
     $('#results_view_list').empty();
     if (status === google.maps.places.PlacesServiceStatus.OK) {
@@ -172,7 +173,6 @@ function initMap(q) {
   }
 
 function filterResults(results) {
-  console.log(results);
   const disallowedArray = ['restaurant', 'lodging', 'clothing_store', 'travel_agency', 'real_estate_agency'];
   return results.filter(result => {
     let end = true;
@@ -202,7 +202,6 @@ function determineIcon(conditions) {
 }
 
 function displaySearchResult(result) {
-  console.log(result);
   const resultLi = `<li class="result_li">${result.name}</li>`
     console.log(resultLi);
     $('#results_view_list').append(resultLi);
@@ -226,6 +225,7 @@ function watchButton() {
     //console.log('WatchButton run');
     $('#submit_button').click(event => {
       event.preventDefault();
+      $('#results_view_list').removeClass('hidden');
       console.log('button submitted');
       const searchTerm = $('#js-search-form').val();
       //initMap(searchTerm);

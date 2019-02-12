@@ -197,6 +197,10 @@ button:focus {
     justify-content: center;
 }
 
+#results_view_list.hidden {
+    display: none;
+}
+
 #results_view_list {
     display: flex;
     flex-direction: column;
