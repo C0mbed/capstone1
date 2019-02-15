@@ -36,16 +36,13 @@ function getOpenWeatherData(currentLoc) {
   };
 
   let url = `http://api.openweathermap.org/data/2.5/forecast?lat=${openOptions.latitude}&lon=${openOptions.longitude}&APPID=${openOptions.key}`;
-  console.log('the url is ', url);
 
   if (currentLoc) {
       return fetch(url)
           .then(res => {
-              console.log('fetch run');
               if (res.ok) {
                   return res.json();
               }
-              console.log('error');
               throw new Error(response.statusText);
           })
           .then(resJson => setWeather(resJson))
@@ -82,7 +79,6 @@ function initializeMapFromPlaces() {
 
 //This is a function that turns a text based address search into lat/long for use with the places API. 
 function codeAddress() {
-  console.log('codeAddress the second is being called');
   geocoder = new google.maps.Geocoder();
   var address = document.getElementById("js-search-form").value;
   geocoder.geocode( { 'address': address}, function(results, status) {
@@ -121,7 +117,6 @@ function initMap(q) {
 
   //This is the result from the API call above and it is used to create markers on the screen, and to display the results. 
   function handlePlacesApiResults(results, status) {
-    console.log(results);
     const filteredResults = filterResults(results);
     $('#results_view_list').empty();
     if (status === google.maps.places.PlacesServiceStatus.OK) {
@@ -193,7 +188,6 @@ function determineWeatherIcon(conditions) {
 //This function appends the #results_view_list to add li items as the filtered search results.
 function displayPlacesSearchResult(result) {
   const resultLi = `<li class="result_li">${result.name}</li>`
-    console.log(resultLi);
     $('#results_view_list').append(resultLi);
 }
 
@@ -240,9 +234,7 @@ function watchButton() {
     $('#submit_button').click(event => {
       event.preventDefault();
       $('#results_view_list').removeClass('hidden');
-      console.log('button submitted');
       const searchTerm = $('#js-search-form').val();
-      //initMap(searchTerm);
       let title = `<h3>Ski Areas Within 50km:</h3>`;
       $('#results_title').removeClass('hidden');
       $('#resort_view').removeClass('hidden');
@@ -267,7 +259,6 @@ function handleKeypress() {
 function closeModal() {
   $(document).click(event => {
     event.preventDefault();
-    console.log('close modal clicked');
     $('#new_modal').addClass('hidden');
   });
 }
