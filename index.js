@@ -235,12 +235,17 @@ function watchButton() {
       event.preventDefault();
       $('#results_view_list').removeClass('hidden');
       const searchTerm = $('#js-search-form').val();
-      let title = `<h3>Ski Areas Within 50km:</h3>`;
-      $('#results_title').removeClass('hidden');
-      $('#resort_view').removeClass('hidden');
-      $('#results_title').empty();
-      $('#results_title').append(title);
-      codeAddress();
+      if (searchTerm) {
+          let title = `<h3>Ski Areas Within 50km:</h3>`;
+          $('#results_title').removeClass('hidden');
+          $('#resort_view').removeClass('hidden');
+          $('#results_title').empty();
+          $('#results_title').append(title);
+        codeAddress();
+      } else {
+        alert("You must enter a search term");
+      }
+      
     });
   }
 
