@@ -263,6 +263,13 @@ function closeModal() {
   });
 }
 
+function touchToCloseModal() {
+  $(document).click(event => {
+    event.preventDefault();
+    $('#new_modal').addClass('hidden');
+  })
+}
+
 $(document).ready(function(){
     watchButton();
     //watchIcon();
