@@ -12,12 +12,18 @@
 <body>
     <main class="container">
         <nav>
-            <ul class="nav-items" role="navigation">
-                <!--<li class="mountain-icon"><i class="fa fa-mountain" id="mountain_icon"></i></li>-->
-                <!--<li><i class="fa fa-snowflake"></i></li>-->
-                <li class="find_pow"><button id="submit_button">gopow</button></li>
-                <li class="find-address"><form><input placeholder="enter a ski resort to begin" id="js-search-form"/></form></li>
-                <!--<li><i class="fa fa-location-arrow" id="location_arrow"></i></li>-->
+            <ul class="nav-items" role="list">
+                <li class="find_pow">
+                    <button id="submit_button">
+                        <h1>gopow</h1>
+                    </button>
+                </li>
+                <li class="find-address">
+                    <form>
+                        <label class="label_field" for="js-search-form">search</label>
+                        <input name="js-search-form" placeholder="enter a ski resort to begin" id="js-search-form"/>
+                    </form>
+                </li>
             </ul>
         </nav>
         <section id="view">

@@ -5,57 +5,29 @@ let currentLoc = {
   long: -106.3549717
 };
 
+//global variables used by google to display the map + weather
 var currentWeather;
 var geocoder;
 var map;
 var infowindow;
 var weather;
 
-function findLoc() {
-  if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(function(position) {
-        let pos = {
-          lat: position.coords.latitude,
-          lng: position.coords.longitude
-        };
-
-        currentLoc.lat = pos.lat;
-        currentLoc.long = pos.long;
-      }, function() {
-        handleLocationError(true, infoWindow, map.getCenter());
-      });
-    } else {
-      // Browser doesn't support Geolocation
-      handleLocationError(false, infoWindow, map.getCenter());
-    }
+//Loads a lightbox/modal when the page first loads to explain the function. 
+function initiateModal() {
+  const popUp = `<div id="modal-content">
+                    <h2 id='modal_title'>GoPow</h2>
+                    <p>Welcome! GoPow is a simple web application to help you locate all ski resorts within 50 kilometers of your current location, and provide you with current weather conditions within that 50km radius.  To start enter the closest ski resort in the field above the map.  You can use a name, an address, or a postal code to search.</p>
+                    <p id='lets_go'>Let's Go!  Click anywhere on the page to close this box!</p>
+                  </div>`
+  $('#new_modal').append(popUp);
+  closeModal();
+  $('#new_modal').removeClass('hidden');
 }
 
-function findCurrentWeather(currentLoc) {
-  openWeatherCall(currentLoc).then(currentWeather =>{
-      if (currentWeather) {
-          console.log('currentWeather in findCurrentWeather ', currentWeather);
-          displayWeather(currentWeather);
-      }
-  });
-}
+//The following functions initiate the API calls to openWeather and Google. 
 
-function formatTemp(temp) {
-  const tempF = `${Math.round(temp-273.15)}C`;
-  return tempF;
-}
-
-function setWeather(res) {
-    if (res) {
-        weather = res;
-        displayWeather(weather);
-    } else {
-        $('#results_view').empty();
-        $('#results_view').text(`Something went wrong: ${err.message}`);
-    }
-
-}
-
-function openWeatherCall(currentLoc) {
+//This is the api call for Open Weather.
+function getOpenWeatherData(currentLoc) {
 
   const openOptions = {
     key: '0901146c0bfaac7c82fb3660c772b2ed',
@@ -84,7 +56,8 @@ function openWeatherCall(currentLoc) {
   }
 }
 
-function initialize() {
+//This function is called on page load, and initializes the places API and map.  
+function initializeMapFromPlaces() {
   var address = (document.getElementById('js-search-form'));
   var autocomplete = new google.maps.places.Autocomplete(address);
   autocomplete.setTypes(['geocode']);
@@ -107,6 +80,7 @@ function initialize() {
 });
 }
 
+//This is a function that turns a text based address search into lat/long for use with the places API. 
 function codeAddress() {
   console.log('codeAddress the second is being called');
   geocoder = new google.maps.Geocoder();
@@ -124,10 +98,11 @@ function codeAddress() {
   });
 }
 
+//This function takes a key word input into the form along with the current lat long and places it on the map. 
 function initMap(q) {
     var pos = new google.maps.LatLng(currentLoc.lat, currentLoc.long);
 
-    initialize();
+    initializeMapFromPlaces();
 
     map = new google.maps.Map(document.getElementById('view'), {
       center: pos,
@@ -140,18 +115,19 @@ function initMap(q) {
       keyword: `${q} ski`,
       location: {lat: currentLoc.lat, lng: currentLoc.long},
       radius: 50000,
-      fields: ['formatted_address', 'geometry', 'name', 'opening_hours', 'rating'
-    ]}, callback);
+      fields: ['formatted_address', 'geometry', 'name', 'opening_hours', 'photos', 'rating'
+    ]}, handlePlacesApiResults);
   }
 
-  function callback(results, status) {
+  //This is the result from the API call above and it is used to create markers on the screen, and to display the results. 
+  function handlePlacesApiResults(results, status) {
     console.log(results);
     const filteredResults = filterResults(results);
     $('#results_view_list').empty();
     if (status === google.maps.places.PlacesServiceStatus.OK) {
       for (var i = 0; i < filteredResults.length; i++) {
         createMarker(filteredResults[i]);
-        displaySearchResult(filteredResults[i]);
+        displayPlacesSearchResult(filteredResults[i]);
       }
     } else {
       const noResorts = `No Ski Resorts within 50km.`
@@ -159,6 +135,7 @@ function initMap(q) {
     }
   }
 
+  //This is a places API function that creates the markers on the map. 
   function createMarker(place) {
     var placeLoc = place.geometry.location;
     var marker = new google.maps.Marker({
@@ -172,6 +149,9 @@ function initMap(q) {
     });
   }
 
+//The following functions control filtering and formatting the data prior to being displayed.
+
+  //This function takes the results from google places API and filters out unwanted categories.
 function filterResults(results) {
   const disallowedArray = ['restaurant', 'lodging', 'clothing_store', 'travel_agency', 'real_estate_agency'];
   return results.filter(result => {
@@ -185,7 +165,14 @@ function filterResults(results) {
   })
 }
 
-function determineIcon(conditions) {
+//This converts the temperature from the openWeather api from Kelvin into Celsius.
+function formatTemp(temp) {
+  const tempC = `${Math.round(temp-273.15)}C`;
+  return tempC;
+}
+
+//This function determines which weather icon needs to be displayed.  
+function determineWeatherIcon(conditions) {
   const formattedConditions = conditions.toLowerCase();
   const conditionObject = {
     clouds: 'fa-cloud',
@@ -201,17 +188,41 @@ function determineIcon(conditions) {
   const weatherKeys = Object.keys(conditionObject);
 }
 
-function displaySearchResult(result) {
+//The following functions control the display of the results to the result view. 
+
+//This function appends the #results_view_list to add li items as the filtered search results.
+function displayPlacesSearchResult(result) {
   const resultLi = `<li class="result_li">${result.name}</li>`
     console.log(resultLi);
     $('#results_view_list').append(resultLi);
 }
 
+//This function handles calling the openWeatherApi and the display weather function if there is a current location for the user. 
+function findCurrentWeather(currentLoc) {
+  getOpenWeatherData(currentLoc).then(currentWeather =>{
+      if (currentWeather) {
+          displayWeather(currentWeather);
+      }
+  });
+}
+
+//This function handles calling the display of the weather, and if there is an error it displays the error text instead.
+function setWeather(res) {
+  if (res) {
+      weather = res;
+      displayWeather(weather);
+  } else {
+      $('#results_view').empty();
+      $('#results_view').text(`Something went wrong: ${err.message}`);
+  }
+}
+
+//This function takes the results of the Open Weather call and displays it in the results view. 
 function displayWeather(weather) {
   const conditions = weather.list[0].weather[0].main;
   const forecastDescription = weather.list[0].weather[0].description;
 
-  const icon = determineIcon(conditions);
+  const icon = determineWeatherIcon(conditions);
   const tempInKelvin =  weather.list[0].main.temp;
   const tempInF = formatTemp(tempInKelvin);
 
@@ -221,6 +232,9 @@ function displayWeather(weather) {
 
 }
 
+//The following functions are used as event listeners to control the closing of the modal, and triggering input/form submission. 
+
+//This function watches for a button click on the 'GOPOW' button and triggers the input submit event. 
 function watchButton() {
     //console.log('WatchButton run');
     $('#submit_button').click(event => {
@@ -229,7 +243,7 @@ function watchButton() {
       console.log('button submitted');
       const searchTerm = $('#js-search-form').val();
       //initMap(searchTerm);
-      let title = `<h3>Showing Ski Areas Within 50km of ${searchTerm}</h3>`;
+      let title = `<h3>Ski Areas Within 50km:</h3>`;
       $('#results_title').removeClass('hidden');
       $('#resort_view').removeClass('hidden');
       $('#results_title').empty();
@@ -238,6 +252,7 @@ function watchButton() {
     });
   }
 
+//This function handles a keypress when the user puts info into the input field.  Hitting 'enter' triggers the submit button function. 
 function handleKeypress() {
   $('#js-search-form').keypress(event => {
     if (event.keyCode == 13) {
@@ -248,22 +263,13 @@ function handleKeypress() {
   });
 }
 
+//This controls how the modal is closed to continue to the main page.
 function closeModal() {
   $(document).click(event => {
     event.preventDefault();
+    console.log('close modal clicked');
     $('#new_modal').addClass('hidden');
   });
-}
-
-function initiateModal() {
-  const popUp = `<div id="modal-content">
-                    <h2 id='modal_title'>GoPow</h2>
-                    <p>Welcome! GoPow is a simple web application to help you locate all ski resorts within 50 kilometers of your current location, and provide you with current weather conditions within that 50km radius.  To start enter the closest ski resort in the field above the map.  You can use a name, an address, or a postal code to search.</p>
-                    <p id='lets_go'>Let's Go!  Click anywhere on the page to close this box!</p>
-                    </div>`
-  $('#new_modal').append(popUp);
-  closeModal();
-  $('#new_modal').removeClass('hidden');
 }
 
 $(document).ready(function(){
